@@ -24,10 +24,6 @@ ScholarAI Writer Agent is a LangGraph-powered autonomous writing system that tra
 
 This architecture ensures grounded, structured, and production-quality long-form outputs.
 
-## 🧠 System Architecture
-
-Below is the execution flow:
-
 ```mermaid
 graph TD
     Start([START]) --> Router
@@ -57,4 +53,71 @@ graph TD
     class Router,Research,Orchestrator,Reducer process;
     class ResearchMode decision;
     class Worker1,Worker2,Worker3,WorkerN node;
+```
+
+### Graph-Oriented Orchestration
+
+Built using:
+- **LangGraph** for deterministic state transitions
+- **LangChain** structured output parsing
+- **Groq** LLM inference
+- **Tavily API** for external research grounding
+
+## 🏗 Core Components
+
+### 1️⃣ Router Node
+Determines:
+- Does this topic require fresh web research?
+- Is it evergreen (closed-book) or time-sensitive (open-book)?
+
+### 2️⃣ Research Node
+- Executes high-signal web queries
+- Deduplicates URLs
+- Extracts structured evidence objects
+- Avoids hallucinated dates or claims
+
+### 3️⃣ Orchestrator
+Produces a strongly-typed Plan object:
+- 5–9 structured sections
+- Explicit goals
+- Concrete bullet breakdowns
+- Target word counts
+- Flags for citations / code inclusion
+
+### 4️⃣ Worker Nodes (Parallelized)
+Each worker:
+- Writes exactly one section
+- Follows bullet structure strictly
+- Respects research/citation rules
+- Includes code when required
+
+### 5️⃣ Reducer
+- Orders sections
+- Compiles final Markdown
+- Writes output file automatically
+
+## 🔍 Intelligent Research Modes
+
+| Mode | Description |
+|------|-------------|
+| `closed_book` | Evergreen conceptual topics |
+| `hybrid` | Mix of evergreen + recent tools/models |
+| `open_book` | News, rankings, recent releases |
+
+The agent automatically decides the mode before planning.
+
+## 📦 Example Usage
+
+```python
+out = run("Write an Essay on the newly published research paper about VL-JEPA by Yann LeCun.")
+print(out["final"])
+```
+
+**Output:**
+- Structured Markdown blog
+- Grounded citations (if needed)
+- Multi-section format
+- Saved automatically as `.md`
+
+
 
